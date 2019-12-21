@@ -1,0 +1,15 @@
+  
+{
+    "hafsa" : {
+        "host" : "localhost",
+        "user" : "root",
+        "password" : "",
+        "database" : "nodejs1"
+    },
+    "hira" :{
+        "host" : "192.168.0.108",
+        "user" : "hira",
+        "password" :"123",
+        "database" : "nodejs2"
+    }
+}

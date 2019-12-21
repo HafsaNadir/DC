@@ -1,8 +1,8 @@
 const express = require('express'),
-    path = require('path'),
-    morgan = require('morgan'),
-    mysql = require('mysql'),
-    myConnection = require('express-myconnection');
+path = require('path'),
+morgan = require('morgan'),
+mysql = require('mysql'),
+myConnection = require('express-myconnection');
 
 const app = express();
 
@@ -16,14 +16,42 @@ app.set('view engine', 'ejs');
 
 // middlewares
 app.use(morgan('dev'));
-app.use(myConnection(mysql, {
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    port: 3306,
-    database: 'nodejs2'
-}, 'single'));
-app.use(express.urlencoded({extended: false}));
+
+//connection
+const config = require("./config.json")
+const hafsa = config.hafsa
+const hira = config.hira
+
+const db_hafsa = mysql.createConnection(hafsa);
+const db_hira = mysql.createConnection(hira);
+
+db_hafsa.connect(err => {
+    if (err) {
+        console.log(err)
+        console.log("not allowed")
+        console.log(hafsa);
+
+        // throw err;
+    }
+    else {
+        console.log("connected to ", hafsa);
+    }
+});
+db_hira.connect(err => {
+    if (err) {
+        console.log(err);
+        console.log("not allowed");
+        console.log(hira);
+    }
+    else {
+        console.log("connected to ", hira);
+    }
+})
+global.db = db_hafsa;
+global.db2 = db_hira;
+
+
+app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.use('/', customerRoutes);
