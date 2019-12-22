@@ -1,34 +1,54 @@
-const controller = {};
+const ip = require("ip");
 
+const controller = {};
+console.log(ip.address());
 controller.list = (req, res) => {
-    db.query('SELECT * FROM customer', (err, customers) => {
-        if (err) {
-            res.json(err);
-        }
-        res.render('customers', {
-            data: customers
-        });
+  if (ip.address() === "192.168.1.119") {
+    db.query("SELECT * FROM customer", (err, customers) => {
+      if (err) {
+        res.redirect("/");
+      }
+      res.render("customers", {
+        data: customers
+      });
     });
-    db2.query('SELECT * FROM customer', (err, customers) => {
-        if (err) {
-            res.json(err);
-        }
-        res.redirect('/')
+  } else if (ip.address() === "10.0.75.0") {
+    db2.query("SELECT * FROM customer", (err, customers) => {
+      if (err) {
+        res.redirect("/");
+      }
+      res.render("customers", {
+        data: customers
+      });
     });
-}
+  }
+};
 
 controller.save = (req, res) => {
-    const data = req.body;
-    console.log(req.body);
-    db.query('INSERT INTO customer set ?', data, (err, customer) => {
-        console.log(customer);
-        res.redirect('/');
-    })
-    db2.query('INSERT INTO customer set ?', data, (err, customer) => {
-        console.log(customer);
-        res.redirect('/');
-    })
-}
+  const data = req.body;
+  console.log(data);
+  try {
+    db.query("INSERT INTO customer set ?", data, (err, customer) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      console.log(customer);
+    });
+  } catch (e) {
+    console.error("error at db1", e);
+  }
+  try {
+    db2.query("INSERT INTO customer set ?", data, (err, customer) => {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      console.log(customer);
+      res.redirect("/");
+    });
+  } catch (e) {
+    console.error("error at db2", e);
+  }
+};
 
 // controller.edit = (req, res) => {
 //     const {id} = req.params;
